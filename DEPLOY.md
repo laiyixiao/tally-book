@@ -39,7 +39,7 @@ VITE_SUPABASE_URL=https://你的项目ID.supabase.co
 VITE_SUPABASE_ANON_KEY=你的 anon key
 ```
 
-## 第五步：部署到 Vercel
+## 第五步：部署到 Netlify
 
 ### 方法 A：使用 GitHub（推荐）
 
@@ -53,51 +53,54 @@ VITE_SUPABASE_ANON_KEY=你的 anon key
    git push -u origin main
    ```
 
-2. **部署到 Vercel**
-   - 访问 [vercel.com](https://vercel.com)
+2. **部署到 Netlify**
+   - 访问 [netlify.com](https://netlify.com)
    - 使用 GitHub 账号登录
-   - 点击 "Add New Project"
+   - 点击 "Add new site" → "Import an existing project"
    - 选择你刚推送的仓库
-   - 点击 "Import"
-   - 在 "Environment Variables" 部分，添加：
-     - `VITE_SUPABASE_URL`
-     - `VITE_SUPABASE_ANON_KEY`
-   - 点击 "Deploy"
+   - 在 "Build settings" 中确认：
+     - Build command: `npm run build`
+     - Publish directory: `dist`
+   - 点击 "Deploy site"
    - 等待部署完成（约 1-2 分钟）
 
-3. **获取访问链接**
-   - 部署完成后，你会得到一个链接：`https://your-project.vercel.app`
+3. **配置环境变量**
+   - 部署完成后，进入 "Site settings" → "Environment variables"
+   - 添加：
+     - `VITE_SUPABASE_URL`
+     - `VITE_SUPABASE_ANON_KEY`
+   - 点击 "Deploy" → "Trigger deploy" 重新部署
+
+4. **获取访问链接**
+   - 部署完成后，你会得到一个链接：`https://your-project.netlify.app`
    - 分享这个链接给你的朋友即可使用
 
-### 方法 B：使用 Vercel CLI
+### 方法 B：使用 Netlify CLI
 
-1. **安装 Vercel CLI**
+1. **安装 Netlify CLI**
    ```bash
-   npm install -g vercel
+   npm install -g netlify-cli
    ```
 
-2. **登录 Vercel**
+2. **登录 Netlify**
    ```bash
-   vercel login
+   netlify login
    ```
 
 3. **部署**
    ```bash
-   vercel
+   netlify deploy --prod
    ```
-   - 按提示操作
-   - 设置环境变量（同方法 A）
 
-4. **生产环境部署**
-   ```bash
-   vercel --prod
-   ```
+4. **配置环境变量**
+   - 在项目根目录创建 `netlify.toml` 文件
+   - 在 `[build.environment]` 中添加环境变量
 
 ## 第六步：分享使用
 
 部署完成后，你会得到一个网址链接，例如：
 ```
-https://travel-ledger-xi.vercel.app
+https://travel-ledger.netlify.app
 ```
 
 ### 使用流程：
