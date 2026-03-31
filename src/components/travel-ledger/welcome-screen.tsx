@@ -68,7 +68,6 @@ export function WelcomeScreen({ onJoinRoom }: WelcomeScreenProps) {
 
       onJoinRoom(room, user, roomData.id)
     } catch (err) {
-      console.error("Create room error:", err)
       setError("创建失败，请重试")
     } finally {
       setLoading(false)
@@ -178,7 +177,6 @@ export function WelcomeScreen({ onJoinRoom }: WelcomeScreenProps) {
 
       onJoinRoom(room, user, roomData.id)
     } catch (err) {
-      console.error("Join room error:", err)
       setError("加入失败，请重试")
     } finally {
       setLoading(false)

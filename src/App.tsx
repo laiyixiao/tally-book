@@ -95,7 +95,6 @@ function App() {
 
         setCurrentUser(dbMemberToMember(memberData))
       } catch (err) {
-        console.error("Restore auth failed:", err)
         clearAuth()
       }
 
@@ -211,12 +210,7 @@ function App() {
   }
 
   const handleAddExpense = async (expense: Expense) => {
-    if (!roomId) {
-      console.error("No roomId:", roomId)
-      return false
-    }
-    if (!currentUser) {
-      console.error("No currentUser:", currentUser)
+    if (!roomId || !currentUser) {
       return false
     }
 
@@ -233,6 +227,12 @@ function App() {
 
       // 如果是编辑操作（有 id 字段），使用 update
       if (expense.id) {
+        // 权限校验：只有支出所有者才能编辑
+        const existingExpense = currentRoom?.expenses.find(e => e.id === expense.id)
+        if (!existingExpense || existingExpense.paidBy !== currentUser.id) {
+          return false
+        }
+
         const { error } = await supabase.from("expenses").update(insertData).eq("id", expense.id)
         if (error) throw error
       } else {
@@ -251,16 +251,21 @@ function App() {
       }
       return true
     } catch (err) {
-      console.error("Add expense error:", err)
       return false
     }
   }
 
   const handleDeleteExpense = async (expenseId: string) => {
-    if (!roomId) return false
+    if (!roomId || !currentUser) return false
+
+    // 权限校验：只有支出所有者才能删除
+    const expense = currentRoom?.expenses.find(e => e.id === expenseId)
+    if (!expense || expense.paidBy !== currentUser.id) {
+      return false
+    }
+
     const { error } = await supabase.from("expenses").delete().eq("id", expenseId)
     if (error) {
-      console.error("Delete expense error:", error)
       return false
     }
     return true

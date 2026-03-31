@@ -11,6 +11,13 @@ interface ExportImageProps {
   members: Member[]
 }
 
+// XSS 防护：转义 HTML 特殊字符
+function escapeHtml(text: string): string {
+  const div = document.createElement("div")
+  div.textContent = text
+  return div.innerHTML
+}
+
 export function ExportImageButton({ room, expenses, members }: ExportImageProps) {
   const captureRef = useRef<HTMLDivElement>(null)
 
@@ -32,12 +39,12 @@ export function ExportImageButton({ room, expenses, members }: ExportImageProps)
         return acc
       }, {} as Record<string, number>)
 
-      // 构建 HTML
+      // 构建 HTML - 使用 escapeHtml 转义用户输入
       container.innerHTML = `
         <div style="color: white;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="font-size: 20px; font-weight: bold; margin: 0;">${room.name}</h1>
-            <span style="font-size: 12px; opacity: 0.9; font-family: monospace;">${room.code}</span>
+            <h1 style="font-size: 20px; font-weight: bold; margin: 0;">${escapeHtml(room.name)}</h1>
+            <span style="font-size: 12px; opacity: 0.9; font-family: monospace;">${escapeHtml(room.code)}</span>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
@@ -64,8 +71,8 @@ export function ExportImageButton({ room, expenses, members }: ExportImageProps)
                 : expenses.slice(0, 10).map((e) => `
                     <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-size: 13px;">
                       <div style="flex: 1;">
-                        <div style="font-weight: 500; color: #1f2937;">${e.description}</div>
-                        <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">${e.category}</div>
+                        <div style="font-weight: 500; color: #1f2937;">${escapeHtml(e.description)}</div>
+                        <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">${escapeHtml(e.category)}</div>
                       </div>
                       <div style="text-align: right;">
                         <div style="font-weight: 600; color: #1f2937;">${currencySymbols[e.currency]}${e.amount.toLocaleString()}</div>
@@ -101,7 +108,6 @@ export function ExportImageButton({ room, expenses, members }: ExportImageProps)
       // 清理
       document.body.removeChild(container)
     } catch (err) {
-      console.error("Export failed:", err)
       alert("导出失败，请重试")
     }
   }

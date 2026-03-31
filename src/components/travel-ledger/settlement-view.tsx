@@ -28,10 +28,16 @@ export function SettlementView({ expenses, members }: SettlementViewProps) {
       members.forEach((m) => (balances[m.id] = 0))
 
       currencyExpenses.forEach((expense) => {
-        const splitAmount = expense.amount / expense.participants.length
-        balances[expense.paidBy] += expense.amount
+        // 修复：防止除零错误，如果参与者为空则跳过
+        if (expense.participants.length === 0) {
+          return
+        }
+
+        // 修复：使用整数计算避免浮点数精度问题
+        const splitAmount = Math.round((expense.amount / expense.participants.length) * 100) / 100
+        balances[expense.paidBy] = Math.round((balances[expense.paidBy] + expense.amount) * 100) / 100
         expense.participants.forEach((participantId) => {
-          balances[participantId] -= splitAmount
+          balances[participantId] = Math.round((balances[participantId] - splitAmount) * 100) / 100
         })
       })
 
